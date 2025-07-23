@@ -5,7 +5,7 @@
     margin:0;
     padding: 0;
     box-sizing: border-box;
-    font-family:'Sans-serif';
+    font-family:"Poppins", sans-serif;
     list-style-type:none;
 }
 
@@ -14,7 +14,7 @@
     height: 100vh;
     overflow:scroll;
     background: linear-gradient(to bottom left, #280028, #800080);
-   
+    background:url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyp_JmCrrQwaV0vMzhaPRdGvHI3fLgLon8ug&usqp=CAU);
     background-size: cover;
 }
 .header{
@@ -211,7 +211,7 @@ i.fa-search:active {
 .cloud {
     width: 290px;
     height: 180px;
-    
+    background:url(https://www.nicepng.com/png/full/1-18174_vector-free-stock-clouds-svg-white-cloud-svg.png);
     background-size: cover;
     background-clip: center center;
     scale: 8;
@@ -220,7 +220,7 @@ i.fa-search:active {
 }
 
 .cloud:after {
-    contain: "";
+    content: "";
     width: 120px;
     height: 120px;
    background: url(https://icon-library.com/images/sun-icon-png/sun-icon-png-27.jpg);
