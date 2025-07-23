@@ -1,65 +1,3 @@
-function fetchWeather(city) {
-  const url = `https://weatherapi-com.p.rapidapi.com/current.json?q=${city}`;
-  const xhr = new XMLHttpRequest();
-
-  xhr.withCredentials = true;
-  xhr.open("GET", url);
-  xhr.setRequestHeader("X-RapidAPI-Key", "YOUR_API_KEY");
-  xhr.setRequestHeader("X-RapidAPI-Host", "weatherapi-com.p.rapidapi.com");
-
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState === XMLHttpRequest.DONE) {
-      const response = JSON.parse(xhr.response);
-
-      // 🌍 Optional: update country flag
-      const country = response.location.country.toLowerCase();
-      const xmlf = new XMLHttpRequest();
-      xmlf.open("GET", `https://restcountries.com/v2/name/${country}`, false);
-      xmlf.send();
-      const jsonf = JSON.parse(xmlf.response);
-      document.querySelector(".country_flag").src = jsonf[0].flag;
-
-      // ✅ Update UI elements
-      $(".weather_in span").text(response.location.name);
-      $(".condition").html(response.current.condition.text);
-      $(".humi").html(response.current.humidity + "%");
-      $(".wind").html(response.current.wind_kph + "km/h");
-      $(".clouds").html(response.current.cloud);
-      $(".local_time").html(response.location.localtime);
-      $(".icon").css("background", `url(https:${response.current.condition.icon}) no-repeat`);
-      
-      // 📌 Show correct unit (C/F)
-      $("input[name='radio']").change(function () {
-        if ($("#rf").is(":checked")) {
-          $(".temp").html(Math.floor(response.current.temp_f) + "F");
-        } else {
-          $(".temp").html(Math.floor(response.current.temp_c) + "C");
-        }
-      });
-
-      $(".flag").hide();
-      $(".country_flag").show();
-    }
-  };
-
-  // 🎬 Start loading animation
-  $(".all").hide();
-  $(".loader, .loader2").show();
-
-  xhr.send();
-}
-
-// 🕹️ Search click handler
-$("i.fa-search").click(() => {
-  const city = $("input").val().trim();
-  if (city) {
-    fetchWeather(city);
-  } else {
-    alert("Please enter a city name.");
-  }
-});
-
-
 window.onload=()=>{
     let xml = new XMLHttpRequest();
     xml.open("GET","https://ipapi.co/json/",false);
@@ -76,7 +14,7 @@ window.onload=()=>{
     xhr.withCredentials = true;
     xhr.open("GET",url);
     xhr.setRequestHeader("X-RapidAPI-Key","79cd07e5damsh16e82764c0d6f5dp1b7cd6jsn17aae8b6f8ef");
-    xhr.setRequestHeader("X-RapidAPI-HOST","weatherapi-com.p.rapidapi.com");
+    xhr.setRequestHeader("X-RapidAPI-HOST", "weatherapi-com.p.rapidapi.com");
     xhr.send();
 
     $(".set_c").on("click",()=>{
@@ -244,6 +182,8 @@ window.onload=()=>{
                                             $(".humi").html(json2["current"].humidity+"%");
                                             $(".wind").html(json2["current"].wind_kph+"km/h");
                                             $(".clouds").html(json2["current"].cloud);
+                                            $(".country").html(json2["location"].country);
+                                            $(".tz").html(json2["location"].tz_id);
                                             $(".local_time").html(json2["location"].localtime);
 
                                          }});
