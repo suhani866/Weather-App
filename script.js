@@ -1,21 +1,89 @@
-window.onload=()=>{
-    let xml = new XMLHttpRequest();
-    xml.open("GET","https://ipapi.co/json/",false);
-    xml.send();
-    let json1 =JSON.parse(xml.response);
-    let url = "https://weatherapi-com.p.rapidapi.com/current.json?q=";
-    url+=json1["city"];
-    $("input").on("focus",()=>{
-        $("input").val("");
-    });
-    
+$(document).ready(() => {
+  $(".all").fadeIn(700);
+  $(".loader, .loader2").hide();
 
-    const xhr = new XMLHttpRequest();
-    xhr.withCredentials = true;
-    xhr.open("GET",url);
-    xhr.setRequestHeader("X-RapidAPI-Key","79cd07e5damsh16e82764c0d6f5dp1b7cd6jsn17aae8b6f8ef");
-    xhr.setRequestHeader("X-RapidAPI-HOST", "weatherapi-com.p.rapidapi.com");
-    xhr.send();
+  const weatherApiKey = "YOUR_RAPIDAPI_KEY"; 
+  const weatherApiHost = "weatherapi-com.p.rapidapi.com";
+
+  async function getCityFromIP() {
+    try {
+      const res = await fetch("https://ipapi.co/json/");
+      const data = await res.json();
+      return data.city;
+    } catch (err) {
+      console.error("IP location fetch failed:", err);
+      return "Bhopal"; // fallback
+    }
+  }
+
+    async function fetchWeather(city) {
+  try {
+    const res = await fetch(`https://weatherapi-com.p.rapidapi.com/current.json?q=${city}`, {
+      headers: {
+        "X-RapidAPI-Key": "YOUR_KEY",
+        "X-RapidAPI-Host": "weatherapi-com.p.rapidapi.com"
+      }
+    });
+    const data = await res.json();
+    updateWeatherUI(data);
+  } catch (error) {
+    console.error("Weather fetch failed:", error); 
+      $(".temp").html("Data unavailable");
+      
+  }
+}
+     function updateWeatherUI(data) {
+    $(".weather_in span").text(data.location.name);
+    $(".temp").html(Math.floor(data.current.temp_c) + "°C");
+    $(".condition").html(data.current.condition.text);
+    $(".humi").html(data.current.humidity + "%");
+    $(".wind").html(data.current.wind_kph + "km/h");
+    $(".tz").html(data.location.tz_id);
+    $(".local_time").html(data.location.localtime);
+    $(".clouds").html(data.current.cloud);
+    $(".icon").css({
+      background: `url(https:${data.current.condition.icon}) no-repeat`,
+      backgroundSize: "contain"
+    });
+
+    $("input[name='radio']").change(() => {
+      const temp = $("#rf").is(":checked") ? data.current.temp_f + "°F" : data.current.temp_c + "°C";
+      $(".temp").html(Math.floor(temp));
+    });
+  }
+function toggleTheme(isDark) {
+    $(".modes i.fa-sun").toggle(!isDark);
+    $(".modes i.fa-moon").toggle(isDark);
+    const darkBg = "rgba(0,0,0,.4)";
+    const lightBg = "rgba(255,255,255,.2)";
+    $(".w_cont, .header, .time_c").css("background", isDark ? darkBg : lightBg);
+    $(".humidity, .s_header").css("background", isDark ? "rgba(255,255,255,.15)" : "rgba(0,0,0,.3)");
+    $(".close_s").css("background", "red");
+  }
+    $(".modes").click(() => {
+    const isSunHidden = $(".modes i.fa-sun").css("display") === "none";
+    toggleTheme(isSunHidden);
+  });
+
+  $(".t:nth-child(1)").click(() => {
+    $(".container").css({
+      background: `url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyp_JmCrrQwaV0vMzhaPrdGvHI3fLgLon8ug&usqp=CAU)`,
+      backgroundSize: "cover"
+    });
+    toggleTheme(true);
+  });
+
+  $(".t:nth-child(2)").click(() => {
+    $(".container").css({
+      background: `url(https://i.postimg.cc/65q3sRQR/714297df65ce9b0ef826b6f45737.jpg)`,
+      backgroundSize: "cover"
+    });
+    toggleTheme(true);
+  });
+
+  // Initialize
+  getCityFromIP().then(city => fetchWeather(city));
+});
 
     $(".set_c").on("click",()=>{
     $(".setting_cont").css({"display":"flex"});
@@ -36,7 +104,7 @@ window.onload=()=>{
                 let json2 = JSON.parse(xhr.response);
                 $(".weather_in span").text(json1["city"]);
 
-                $(".country").html(Math.floor(json2["current"].temp_c)+"C");
+                $(".country").html(Math.floor(json2["current"].temp_c)+"°C");
                 
                 document.querySelector(".icon").style.background="url(https:"+json2["current"]["condition"].icon+")";
 
@@ -58,14 +126,15 @@ window.onload=()=>{
                         .html(Math.floor(json2["current"].temp_f)+"F");
                         
                     } else {
-                        $(".temp").html(Math.floor(json2["current"].temp_c)+"C");
+                        $(".temp").html(Math.floor(json2["current"].temp_c) + "°C");
+
                     }
                 }
             );
 
             document.querySelector(".modes i.fa-sun").style.display="none";
             $(".modes").click(()=>{
-                if (document.querySelector(".modes i.fa-sun").style.display="none") 
+                if (document.querySelector(".modes i.fa-sun").style.display==="none") 
                     {
                         $(".modes i.fa-moon").hide();
                         $(".modes i.fa-sun").show();
@@ -76,7 +145,7 @@ window.onload=()=>{
                         $(".s_header").css({"background":"rgba(255,255,255,.15)"});
                         $(".close_s").css({"background":"red"});                    
                 } else {
-                    if(document.querySelector("modes i-fa-moon").style.display="none"){
+                    if(document.querySelector(".modes i-fa-moon").style.display==="none"){
                         $(".modes i.fa-sun").hide();
                         $(".modes i.fa-moon").show();
                         $(".w_cont").css({"background":"rgba(255,255,255,.2)"});
@@ -167,6 +236,7 @@ window.onload=()=>{
                                     $(".flag").hide();
                                     $(".country_flag").show();
                                     $(".weather_in span").text(json2["location"].name);
+
                                     $("input[name='radio']").change(function() {
                                         if($("#rf").is(':checked')) {
                                          $(".temp").html(Math.floor(json2["current"].temp_f)+"F");
@@ -192,3 +262,4 @@ window.onload=()=>{
 
                                  }});
                              }
+
